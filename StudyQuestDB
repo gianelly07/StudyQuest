@@ -1,0 +1,224 @@
+
+CREATE DATABASE StudyQuestDB
+
+CREATE TABLE archivo_adjunto
+(
+  id_archivo     INT          NOT NULL,
+  id_tarea       INT          NOT NULL,
+  id_entrega     INT          NOT NULL,
+  nombre_archivo VARCHAR(250) NOT NULL,
+  fecha_subido   DATETIME     NOT NULL,
+  PRIMARY KEY (id_archivo)
+);
+
+CREATE TABLE comentario
+(
+  id_comentario INT          NOT NULL,
+  contenido     VARCHAR(250) NOT NULL,
+  fecha         DATE         NOT NULL,
+  id_usuario    INT          NOT NULL,
+  id_entrega    INT          NOT NULL,
+  PRIMARY KEY (id_comentario)
+);
+
+CREATE TABLE curso
+(
+  id_curso     INT          NOT NULL,
+  nombre_curso VARCHAR(100) NOT NULL,
+  descipcion   VARCHAR(250) NOT NULL,
+  id_docente   INT          NOT NULL,
+  PRIMARY KEY (id_curso)
+);
+
+CREATE TABLE docente
+(
+  id_docente INT NOT NULL,
+  id_usuario INT NOT NULL,
+  PRIMARY KEY (id_docente)
+);
+
+CREATE TABLE docente_especialidad
+(
+  id_docente      INT NOT NULL,
+  id_especialidad INT NOT NULL,
+  PRIMARY KEY (id_docente, id_especialidad)
+);
+
+CREATE TABLE entrega
+(
+  id_entrega    INT      NOT NULL,
+  fecha_entrega DATETIME NOT NULL,
+  xp_obtenido   INT      NOT NULL,
+  calificacion  FLOAT    NOT NULL,
+  id_tarea      INT      NOT NULL,
+  id_estudiante INT      NOT NULL,
+  PRIMARY KEY (id_entrega)
+);
+
+CREATE TABLE especialidad
+(
+  id_especialidad INT          NOT NULL,
+  descripción     VARCHAR(250) NOT NULL,
+  PRIMARY KEY (id_especialidad)
+);
+
+CREATE TABLE estudiante
+(
+  id_estudiante     INT          NOT NULL,
+  codigo_estudiante VARCHAR(15)  NOT NULL,
+  carrera           VARCHAR(100) NOT NULL,
+  id_usuario        INT          NOT NULL,
+  PRIMARY KEY (id_estudiante)
+);
+
+CREATE TABLE estudiante_logro
+(
+  id_estudiante  INT  NOT NULL,
+  id_logro       INT  NOT NULL,
+  fecha_obtenida DATE NOT NULL,
+  PRIMARY KEY (id_estudiante, id_logro)
+);
+
+CREATE TABLE inscripcion
+(
+  id_estudiante     INT          NOT NULL,
+  id_seccion        INT          NOT NULL,
+  fecha_inscripcion DATETIME     NOT NULL,
+  estado            VARCHAR(100) NOT NULL,
+  PRIMARY KEY (id_estudiante, id_seccion)
+);
+
+CREATE TABLE logro
+(
+  id_logro     INT          NOT NULL,
+  nombre       VARCHAR(250) NOT NULL,
+  descripcipon VARCHAR(250) NOT NULL,
+  xp_bonus     INT          NOT NULL,
+  PRIMARY KEY (id_logro)
+);
+
+CREATE TABLE racha
+(
+  id_racha               INT  NOT NULL,
+  fecha_inicio           DATE NOT NULL,
+  fecha_ultima_actividad DATE NOT NULL,
+  id_estudiante          INT  NOT NULL,
+  PRIMARY KEY (id_racha)
+);
+
+CREATE TABLE seccion
+(
+  id_seccion     INT          NOT NULL,
+  nombre_seccion VARCHAR(100) NOT NULL,
+  periodo        VARCHAR(50)  NOT NULL,
+  id_curso       INT          NOT NULL,
+  PRIMARY KEY (id_seccion)
+);
+
+CREATE TABLE tarea
+(
+  id_tarea          INT          NOT NULL,
+  titulo            VARCHAR(250) NOT NULL,
+  descripcion       VARCHAR(250) NOT NULL,
+  fecha_publicacion DATETIME     NOT NULL,
+  fecha_limite      DATETIME     NOT NULL,
+  xp_base           INT          NOT NULL,
+  id_seccion        INT          NOT NULL,
+  PRIMARY KEY (id_tarea)
+);
+
+CREATE TABLE usuario
+(
+  id_usuario     INT          NOT NULL,
+  nombre         VARCHAR(250) NOT NULL,
+  apellido       VARCHAR(250) NOT NULL,
+  correo         VARCHAR(150) NOT NULL,
+  telefono       VARCHAR(9)   NOT NULL,
+  fecha_creacion DATE         NOT NULL,
+  PRIMARY KEY (id_usuario)
+);
+
+ALTER TABLE docente_especialidad
+  ADD CONSTRAINT FK_especialidad_TO_docente_especialidad
+    FOREIGN KEY (id_especialidad)
+    REFERENCES especialidad (id_especialidad);
+
+ALTER TABLE seccion
+  ADD CONSTRAINT FK_curso_TO_seccion
+    FOREIGN KEY (id_curso)
+    REFERENCES curso (id_curso);
+
+ALTER TABLE inscripcion
+  ADD CONSTRAINT FK_estudiante_TO_inscripcion
+    FOREIGN KEY (id_estudiante)
+    REFERENCES estudiante (id_estudiante);
+
+ALTER TABLE inscripcion
+  ADD CONSTRAINT FK_seccion_TO_inscripcion
+    FOREIGN KEY (id_seccion)
+    REFERENCES seccion (id_seccion);
+
+ALTER TABLE entrega
+  ADD CONSTRAINT FK_tarea_TO_entrega
+    FOREIGN KEY (id_tarea)
+    REFERENCES tarea (id_tarea);
+
+ALTER TABLE entrega
+  ADD CONSTRAINT FK_estudiante_TO_entrega
+    FOREIGN KEY (id_estudiante)
+    REFERENCES estudiante (id_estudiante);
+
+ALTER TABLE archivo_adjunto
+  ADD CONSTRAINT FK_tarea_TO_archivo_adjunto
+    FOREIGN KEY (id_tarea)
+    REFERENCES tarea (id_tarea);
+
+ALTER TABLE archivo_adjunto
+  ADD CONSTRAINT FK_entrega_TO_archivo_adjunto
+    FOREIGN KEY (id_entrega)
+    REFERENCES entrega (id_entrega);
+
+ALTER TABLE comentario
+  ADD CONSTRAINT FK_usuario_TO_comentario
+    FOREIGN KEY (id_usuario)
+    REFERENCES usuario (id_usuario);
+
+ALTER TABLE comentario
+  ADD CONSTRAINT FK_entrega_TO_comentario
+    FOREIGN KEY (id_entrega)
+    REFERENCES entrega (id_entrega);
+
+ALTER TABLE estudiante_logro
+  ADD CONSTRAINT FK_estudiante_TO_estudiante_logro
+    FOREIGN KEY (id_estudiante)
+    REFERENCES estudiante (id_estudiante);
+
+ALTER TABLE estudiante_logro
+  ADD CONSTRAINT FK_logro_TO_estudiante_logro
+    FOREIGN KEY (id_logro)
+    REFERENCES logro (id_logro);
+
+ALTER TABLE racha
+  ADD CONSTRAINT FK_estudiante_TO_racha
+    FOREIGN KEY (id_estudiante)
+    REFERENCES estudiante (id_estudiante);
+
+ALTER TABLE docente
+  ADD CONSTRAINT FK_usuario_TO_docente
+    FOREIGN KEY (id_usuario)
+    REFERENCES usuario (id_usuario);
+
+ALTER TABLE estudiante
+  ADD CONSTRAINT FK_usuario_TO_estudiante
+    FOREIGN KEY (id_usuario)
+    REFERENCES usuario (id_usuario);
+
+ALTER TABLE docente_especialidad
+  ADD CONSTRAINT FK_docente_TO_docente_especialidad
+    FOREIGN KEY (id_docente)
+    REFERENCES docente (id_docente);
+
+ALTER TABLE curso
+  ADD CONSTRAINT FK_docente_TO_curso
+    FOREIGN KEY (id_docente)
+    REFERENCES docente (id_docente);
